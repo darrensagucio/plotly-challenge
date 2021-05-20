@@ -40,11 +40,13 @@ d3.json("samples.json").then((importedData) => {
     var initOtuLabelsArrayR = initOtuLabelsArray.reverse();
 
     // Creating Bubble Chart Info 
-
-    console.log(data.samples[0].sample_values.length); //80
+   
     var initBubbleSampleValuesArray = []
     var initBubbleOtuIdNumArray = []
     var initBubbleOtuLabelsArray = []
+
+    // Checking Length
+    // console.log(data.samples[0].sample_values.length); //80
 
     for (var i=0; i < data.samples[0].sample_values.length; i++) {
         
@@ -59,17 +61,21 @@ d3.json("samples.json").then((importedData) => {
     }
 
     // Creating Demographic Info 
-    var initMetaData = Object.entries(data.metadata[0]);
-    console.log(initMetaData[0]);
 
-    for (var i=0; i < initMetaData.length; i++) {
-        var h5 = document.createElement("h5");
-        h5.text = initMetaData[i];
+    var initMetaDataValues = Object.values(data.metadata[0]);
+    var initMetaDataKeys = Object.keys(data.metadata[0]);
+    
+    // Checking Values
+    // console.log(initMetaDataValues);
+
+    for (var i=0; i < initMetaDataValues.length; i++) {
+        var br = document.createElement("br");
+        const newText = document.createTextNode(`${initMetaDataKeys[i]}: ${initMetaDataValues[i]}`)
         var selectHTMLID = document.getElementById("sample-metadata");
-        selectHTMLID.appendChild(h5);
+        selectHTMLID.appendChild(newText);
+        selectHTMLID.appendChild(br);
     }
-    console.log(initMetaData.length);
-    console.log("finished?");
+    
 
     // Creating Fuction That Builds All Charts 
 
@@ -123,6 +129,7 @@ function optionChanged() {
     d3.json("samples.json").then((importedData) => {
 
         var data = importedData;
+        console.log("Data Info!");
         console.log(data);
 
         var sampleNames = data.names;
@@ -186,6 +193,27 @@ function optionChanged() {
 
                 updateBubbleChart(bubbleSampleValuesArray, bubbleOtuIdNumArray, bubbleOtuLabelsArray);
                 console.log("Update Bubble Chart Complete!")
+
+                // Demographic Info
+
+                // Removing Current Info
+                //https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild
+
+                let element = document.getElementById("sample-metadata")
+                while (element.firstChild){
+                    element.removeChild(element.firstChild);
+                }
+                var MetaDataValues = Object.values(data.metadata[counterNum]);
+                var MetaDataKeys = Object.keys(data.metadata[counterNum]);
+
+                for (var i=0; i < MetaDataValues.length; i++) {
+                    var br = document.createElement("br");
+                    const newText = document.createTextNode(`${MetaDataKeys[i]}: ${MetaDataValues[i]}`)
+                    var selectHTMLID = document.getElementById("sample-metadata");
+                    selectHTMLID.appendChild(newText);
+                    selectHTMLID.appendChild(br);
+                }
+                console.log("Update Demographic Info Complete!")
                 
                 break;
             }
