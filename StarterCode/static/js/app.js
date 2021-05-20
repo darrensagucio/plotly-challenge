@@ -58,6 +58,19 @@ d3.json("samples.json").then((importedData) => {
         initBubbleOtuLabelsArray.push(initBubbleOtuLabel);
     }
 
+    // Creating Demographic Info 
+    var initMetaData = Object.entries(data.metadata[0]);
+    console.log(initMetaData[0]);
+
+    for (var i=0; i < initMetaData.length; i++) {
+        var h5 = document.createElement("h5");
+        h5.text = initMetaData[i];
+        var selectHTMLID = document.getElementById("sample-metadata");
+        selectHTMLID.appendChild(h5);
+    }
+    console.log(initMetaData.length);
+    console.log("finished?");
+
     // Creating Fuction That Builds All Charts 
 
     function init() {
