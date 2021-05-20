@@ -1,23 +1,10 @@
-// function unpack(rows, index) {
-//     return rows.map(function(row) {
-//       return row[index];
-//     });
-//   }
-
- // var findArrayZero = unpack(data.samples, 0);
-// console.log(findArrayZero);
-var data;
-var sampleNames;
 
 d3.json("samples.json").then((importedData) => {
-    data = importedData;
+    var data = importedData;
+    console.log("WELCOME TO CONSOLE!");
     console.log(data);
 
-    sampleNames = data.names;
-    console.log(sampleNames);
-
-    var findArrayZero = data.samples[6].id
-    console.log(findArrayZero);
+    var sampleNames = data.names;
 
     //Create Dropdown Menu
     for (var i=0; i < sampleNames.length; i++) {
@@ -30,33 +17,40 @@ d3.json("samples.json").then((importedData) => {
         var select = document.getElementById("selDataset");
         select.appendChild(option);
     }
-    // var initSampleValueTest = data.samples[0].sample_values[0];
-    // console.log(initSampleValueTest)
-
+   
     var initSampleValueArray = []; 
     var initOtuIdArray = []; 
+    var initOtuLabelsArray = [];
 
     for (var i=0; i < 10; i++) {
         var initSampleValue = data.samples[0].sample_values[i];
         initSampleValueArray.push(initSampleValue);
         var initOtuId = `OTU ${data.samples[0].otu_ids[i]}`;
         initOtuIdArray.push(initOtuId);
+        var initOtuLabels = data.samples[0].otu_labels[i];
+        initOtuLabelsArray.push(initOtuLabels);
     }
    
     var initSampleValueArrayR = initSampleValueArray.reverse();
     var initOtuIdArrayR = initOtuIdArray.reverse();
+    var initOtuLabelsArrayR = initOtuLabelsArray.reverse();
 
     function init() {
         var trace = {
             type: "bar",
             x: initSampleValueArrayR,
             y: initOtuIdArrayR,
+            text: initOtuLabelsArrayR, 
             orientation: 'h'
         }
 
+        var layout = {
+            title: "Top 10 Bacteria Cultures Found"
+        };
+
         var data = [trace];
 
-        Plotly.newPlot("bar", data);
+        Plotly.newPlot("bar", data, layout);
 
     }
 
@@ -64,38 +58,56 @@ d3.json("samples.json").then((importedData) => {
 
 });
 
-console.log(sampleNames); 
-
-// On change to the DOM, call optionChanged()
-d3.selectAll("#selDataset").on("change", optionChanged);
+// When User Clicks A Different ID On Dropdown Menu 
 
 function optionChanged() {
-    var menu = d3.select("#selDataset");
+    d3.json("samples.json").then((importedData) => {
 
-    var userSelectId = menu.property("value");
-    
-    var SampleValueArray = []; 
-    var OtuIdArray = []; 
-    
-    for (var i=0; i < sampleNames.length; i++) {
-        if (userSelectId === data.samples[i].id[i]) {
-            console.log("found");
-            for (var i=0; i < 10; i++) {
-                var SampleValue = data.samples[i].sample_values[i];
-                SampleValueArray.push(SampleValue);
-                var OtuId = `OTU ${data.samples[i].otu_ids[i]}`;
-                OtuIdArray.push(OtuId);
+        var data = importedData;
+        console.log(data);
+
+        var sampleNames = data.names;
+        
+        // On change to the DOM, call optionChanged()
+        d3.selectAll("#selDataset").on("change", optionChanged);
+
+        var menu = d3.select("#selDataset");
+
+        var userSelectId = menu.property("value");
+        console.log("Success!");
+        console.log(`User clicked on ID: ${userSelectId}`);
+
+        var SampleValueArray = []; 
+        var OtuIdArray = []; 
+
+        var counterNum = 0 
+        
+        for (var i=0; i < sampleNames.length; i++) {
+            if (userSelectId === data.samples[i].id) {
+                console.log("Match Found!");
+                console.log(`Data For ID: ${data.samples[counterNum].id}`)
+                for (var i=0; i < 10; i++) {
+                    var SampleValue = data.samples[counterNum].sample_values[i];
+                    SampleValueArray.push(SampleValue);
+                    var OtuId = `OTU ${data.samples[counterNum].otu_ids[i]}`;
+                    OtuIdArray.push(OtuId);
+                }
+                var SampleValueArrayR = SampleValueArray.reverse();
+                var OtuIdArrayR = OtuIdArray.reverse();
+                updateBarPlotly(SampleValueArrayR, OtuIdArrayR);
+                break;
             }
-            var SampleValueArrayR = SampleValueArray.reverse();
-            var OtuIdArrayR = OtuIdArray.reverse();
-            updateBarPlotly(SampleValueArrayR, OtuIdArrayR);
-            break;
+            counterNum++;
         }
 
-    }
-}
+        console.log(SampleValueArrayR);
+        console.log(OtuIdArrayR);
 
-function updateBarPlotly(newXAxis, newYAxis) {
-    Plotly.restyle("bar", "x", [newXAxis]);
-    Plotly.restyle("bar", "y", [newYAxis]);
+        function updateBarPlotly(newXAxis, newYAxis) {
+            Plotly.restyle("bar", "x", [newXAxis]);
+            Plotly.restyle("bar", "y", [newYAxis]);
+        }
+    
+    });
+
 }
