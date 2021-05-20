@@ -76,6 +76,9 @@ d3.json("samples.json").then((importedData) => {
         selectHTMLID.appendChild(br);
     }
     
+    // Pulling Number Of Scrubs Each Week (Gauge Chart)
+    var initWfreqData = data.metadata[0].wfreq;
+    console.log(initWfreqData);
 
     // Creating Fuction That Builds All Charts 
 
@@ -116,6 +119,61 @@ d3.json("samples.json").then((importedData) => {
         var bubbleData = [bubbleTrace];
 
         Plotly.newPlot("bubble", bubbleData, bubbleLayout);
+
+        // Creating Gauge Chart
+        var gaugeTrace = {
+            domain: { 
+                x: [0,1], y: [0,1] 
+            },
+            value: initWfreqData,
+            gauge: {
+                axis: {
+                    range: [null, 9], 
+                    tickwidth: 1,
+                    dtick: 1
+                },
+                threshold: {
+                    line: {
+                        color: "#c28566",
+                        width: 4
+                    },
+                    thickness: 0.75,
+                    value: initWfreqData
+                },
+                bar: {
+                    color: "#fffffa"
+                },
+                steps: [
+                    {range: [0, 1], color: "#ffd1e6"},
+                    {range: [1, 2], color: "#ffd4d9"},
+                    {range: [2, 3], color: "#ffd6cc"},
+                    {range: [3, 4], color: "#ffd9bf"},
+                    {range: [4, 5], color: "#ffdbb2"},
+                    {range: [5, 6], color: "#ffdea6"},
+                    {range: [6, 7], color: "#ffe099"},
+                    {range: [7, 8], color: "#ffe38c"},
+                    {range: [8, 9], color: "#ffe680"}
+                ]
+            },
+            title: {
+                text: "Belly Button Washing Frequency",
+            },
+            type: "indicator",
+            mode: "gauge+number" //probably the gauge number 
+        }
+
+        var gaugeLayout = {
+            width: 600,
+            height: 500,
+            margin: {
+                t: 0,
+                b: 0
+            }
+        }
+
+        var gaugeData = [gaugeTrace];
+
+        Plotly.newPlot('gauge', gaugeData, gaugeLayout);
 
     }
 
@@ -214,6 +272,10 @@ function optionChanged() {
                     selectHTMLID.appendChild(br);
                 }
                 console.log("Update Demographic Info Complete!")
+
+                var WfreqData = data.metadata[counterNum].wfreq;
+                var thresholdData = WfreqData;
+                updateGaugeChart(WfreqData, thresholdData);
                 
                 break;
             }
@@ -232,6 +294,11 @@ function optionChanged() {
             Plotly.restyle("bubble", "text", [bubOtuLabels]);
             Plotly.restyle("bubble", "color", [bubOtuIds]);
             Plotly.restyle("bubble", "size", [bubSampleValues]);
+        }
+
+        function updateGaugeChart(wfreqNum, thresNum) {
+            Plotly.restyle("gauge", "value", [wfreqNum]);
+            Plotly.restyle("gauge", "gauge.threshold.value", [thresNum]);
         }
 
         //data.samples[counterNum].otu_ids[i].length ? To find the length of that specific array
