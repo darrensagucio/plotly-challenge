@@ -276,6 +276,8 @@ function optionChanged() {
                 var WfreqData = data.metadata[counterNum].wfreq;
                 var thresholdData = WfreqData;
                 updateGaugeChart(WfreqData, thresholdData);
+
+                console.log("Update Gauge Chart Complete!")
                 
                 break;
             }
