@@ -112,6 +112,9 @@ d3.json("samples.json").then((importedData) => {
 
         var bubbleLayout = {
             title: "Bacteria Cultures Per Sample",
+            xaxis: {
+                title: "OTU ID"
+            },
             height: 575,
             width: 1300
         };
